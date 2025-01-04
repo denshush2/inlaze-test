@@ -1,0 +1,2 @@
+ENV=local
+SQL_URI=postgresql://postgres:postgres@localhost/inlaze

@@ -1,0 +1,16 @@
+version: '3'
+
+services:
+  db-inlaze:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: inlaze
+    ports:
+      - '5432:5432'
+    volumes:
+      - ./docker_local/postgres:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:

@@ -1,0 +1,52 @@
+version: '3.9'
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: inlaze
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - internal_network
+    ports:
+      - "5432:5432" 
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      args:
+        ENV: local
+        SQL_URI: postgresql://postgres:postgres@postgres/inlaze
+    container_name: backend
+    depends_on:
+      - postgres
+    networks:
+      - internal_network
+    environment:
+      ENV: local
+      SQL_URI: postgresql://postgres:postgres@postgres/inlaze
+    command: >
+      sh -c "pnpm run migrations:run && pnpm run start:prod"
+    ports:
+      - "3000:3000" 
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: frontend
+    depends_on:
+      - backend
+    networks:
+      - internal_network
+    ports:
+      - "8080:80" 
+
+networks:
+  internal_network:
+    driver: bridge
